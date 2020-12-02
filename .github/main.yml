@@ -1,0 +1,65 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [ github_workflows ]
+  pull_request:
+    branches: [ github_workflows ]
+  create:
+    branches: [github_workflows, flows2]
+
+jobs:
+  setup:
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+      - name: Cache Node.js modules
+        uses: actions/cache@v2
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+        path: ~/.npm
+        key: ${{ github.ref }}-{{ runner.OS }}-${{ hashFiles('**/package-lock.json') }}
+  unit-test:
+    needs: setup
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+      - name: Cache Node.js modules
+        uses: actions/cache@v2
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+        path: ~/.npm
+        key: ${{ github.ref }}-{{ runner.OS }}-${{ hashFiles('**/package-lock.json') }}
+      - name: Run unit tests
+        run: npm install
+        run: npm run test_headless
+
+  e2e-test:
+    needs: setup
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+      - name: Cache Node.js modules
+        uses: actions/cache@v2
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+        path: ~/.npm
+        key: ${{ github.ref }}-{{ runner.OS }}-${{ hashFiles('**/package-lock.json') }}
+      - name: Run e2e tests
+        run: npm install
+        run: npm run e2e_headless
+
+
